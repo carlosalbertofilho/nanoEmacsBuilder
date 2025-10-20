@@ -40,6 +40,9 @@ configure_rootfs_build()
     
     # Enable libgccjit for native compilation
     update_use 'sys-devel/gcc' '+jit'
+
+    # Habilita PAM se SU estiver ativo (regra REQUIRED_USE: su? ( pam ))
+    update_use 'sys-apps/util-linux' '+pam'
     
     # Python support for tools
     update_use 'dev-lang/python' '+ssl' '+sqlite' '+xml' '+ncurses' '+readline'
@@ -69,7 +72,10 @@ configure_rootfs_build()
     update_use 'app-text/poppler' '+cairo' '+jpeg' '+png' '+tiff' '+utils'
     
     # MediaInfo for audio/video metadata - Dirvish media info
-    update_use 'media-video/mediainfo' '+curl' '+mms'
+    update_use 'media-video/mediainfo' '-curl' '-mms'
+
+    # Temporariamente desativa a flag 'doc' para o fontconfig para quebrar o ciclo
+    update_use 'media-libs/fontconfig' '-doc'
     
     # ImageMagick for font preview and image processing - Dirvish font preview
     # Note: svg requires xml to be enabled
