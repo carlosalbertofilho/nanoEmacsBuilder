@@ -47,9 +47,23 @@ Provide a lightweight, modern Emacs development environment specifically optimiz
 ### Version Control & Utilities
 
 - **Git** with curl and WebDAV support
+- **GitHub CLI (gh)** - Manage GitHub repos, PRs, and issues from terminal
 - **Python 3** with SSL, SQLite, and development tools
 - **Pandoc** - Document conversion and processing
 - **Curl/Wget** - Network utilities
+
+### Emacs Dirvish Support
+
+Complete suite of tools for advanced file management with [Dirvish](https://github.com/alexluigit/dirvish):
+
+- **libvips (vipsthumbnail)** - Fast image thumbnail generation
+- **ffmpegthumbnailer** - Video preview thumbnails
+- **poppler (pdftoppm)** - PDF document previews
+- **mediainfo** - Audio/video metadata display
+- **ImageMagick** - Font and image processing
+- **p7zip** - Archive file inspection (7z, zip, rar)
+- **rsync** - Efficient file synchronization
+- **epub-thumbnailer** - EPUB document previews
 
 ## 🚀 Quick Start
 
@@ -105,6 +119,26 @@ fzf --preview 'cat {}'
 # Git operations
 git status
 git log --oneline | head -10
+
+# GitHub CLI operations
+gh auth login
+gh repo clone user/repo
+gh pr create --title "Feature" --body "Description"
+gh issue list
+```
+
+### Dirvish File Manager
+
+Dirvish is a modern file manager for Emacs with rich preview capabilities. All required external tools are pre-installed:
+
+```bash
+# Image preview - powered by vipsthumbnail
+# Video preview - powered by ffmpegthumbnailer
+# PDF preview - powered by pdftoppm
+# Archive inspection - powered by 7z
+# Media info - powered by mediainfo
+# Font preview - powered by ImageMagick
+# File sync - powered by rsync
 ```
 
 ## ⚙ Configuration

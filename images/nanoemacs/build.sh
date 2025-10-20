@@ -8,7 +8,7 @@
 #     kubler.sh build -i emacs/nanoemacs
 # ..and then search the Portage database:
 #     eix <search-string>
-_packages="app-editors/emacs dev-vcs/git sys-apps/ripgrep sys-apps/fd app-shells/fzf sys-devel/gcc dev-util/cmake sys-devel/gdb sys-devel/clang dev-util/valgrind net-misc/curl app-text/pandoc dev-lang/python dev-util/pkgconf app-text/ispell media-libs/fontconfig sys-process/procps app-arch/unzip net-misc/wget dev-util/clang-common media-libs/libvips app-text/poppler media-video/ffmpegthumbnailer media-libs/mediainfo app-arch/p7zip sys-apps/coreutils app-text/epub-thumbnailer media-gfx/imagemagick sys-apps/file app-shells/bash net-misc/rsync"
+_packages="app-editors/emacs dev-vcs/git dev-util/github-cli sys-apps/ripgrep sys-apps/fd app-shells/fzf sys-devel/gcc dev-util/cmake sys-devel/gdb sys-devel/clang dev-util/valgrind net-misc/curl app-text/pandoc dev-lang/python dev-util/pkgconf app-text/ispell media-libs/fontconfig sys-process/procps app-arch/unzip net-misc/wget dev-util/clang-common media-libs/libvips app-text/poppler media-video/ffmpegthumbnailer media-libs/mediainfo app-arch/p7zip sys-apps/coreutils app-text/epub-thumbnailer media-gfx/imagemagick sys-apps/file app-shells/bash net-misc/rsync"
 # Install a standard system directory layout at ${_EMERGE_ROOT}, optional, default: false
 #BOB_INSTALL_BASELAYOUT=true
 
