@@ -85,7 +85,6 @@ configure_rootfs_build()
     update_keywords 'media-video/ffmpegthumbnailer' '+~amd64'
     update_keywords 'app-text/epub-thumbnailer' '+~amd64'
     
-    :
 }
 
 #

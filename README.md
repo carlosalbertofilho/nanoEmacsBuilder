@@ -69,30 +69,6 @@ kubler build emacs/nanoemacs -t
 kubler build emacs/nanoemacs -i
 ```
 
-### Running the Container
-
-```bash
-# Basic usage
-docker run -it --rm emacs/nanoemacs
-
-# Mount your project directory
-docker run -it --rm -v $(pwd):/workspace emacs/nanoemacs
-
-# With user mapping (recommended)
-docker run -it --rm \
-  -e USER=$(whoami) \
-  -e UID=$(id -u) \
-  -v $(pwd):/workspace \
-  emacs/nanoemacs
-
-# For X11 forwarding (Linux)
-docker run -it --rm \
-  -e DISPLAY=$DISPLAY \
-  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
-  -v $(pwd):/workspace \
-  emacs/nanoemacs
-```
-
 ## 🛠 Development Workflow
 
 ### 42 School Projects
@@ -206,7 +182,7 @@ The image includes comprehensive testing:
 
 ```bash
 # Run build tests
-kubler build emacs/nanoemacs -t
+kubler build -C emacs/nanoemacs -i
 
 # Manual health check
 docker run --rm emacs/nanoemacs docker-healthcheck
@@ -230,6 +206,24 @@ docker run -it --rm emacs/nanoemacs bash
 - **RAM**: 4GB minimum, 8GB recommended
 - **Disk**: 10GB free space for build cache
 - **Network**: Stable connection for package downloads
+
+## 🔑 Gentoo GPG Keys
+
+Para builds confiáveis, é necessário importar as chaves GPG oficiais do Gentoo.  
+Execute o comando abaixo **antes de rodar o Kubler** (recomendado pela [documentação oficial](https://www.gentoo.org/downloads/signatures/)):
+
+```bash
+wget -O - https://qa-reports.gentoo.org/output/service-keys.gpg | gpg --import
+```
+
+Se preferir **desabilitar a verificação GPG** (menos seguro, não recomendado para produção), descomente a linha abaixo no arquivo `kubler.conf`:
+
+```bash
+# Effectively always enables -s for the build command
+KUBLER_DISABLE_GPG='true'
+```
+
+> **⚠️ Nota:** O uso das chaves GPG garante a autenticidade dos snapshots e pacotes baixados durante o build. Desabilitar a verificação GPG só é recomendado para desenvolvimento/testes.
 
 ## 🚨 Troubleshooting
 
