@@ -8,7 +8,7 @@
 #     kubler.sh build -i emacs/nanoemacs
 # ..and then search the Portage database:
 #     eix <search-string>
-_packages="app-editors/emacs dev-vcs/git dev-util/github-cli sys-apps/ripgrep sys-apps/fd app-shells/fzf sys-devel/gcc dev-build/cmake dev-debug/gdb llvm-core/clang dev-debug/valgrind net-misc/curl app-text/pandoc-bin dev-lang/python dev-util/pkgconf app-text/hunspell media-libs/fontconfig sys-process/procps app-arch/unzip net-misc/wget llvm-core/clang-common media-libs/vips app-text/poppler media-video/ffmpegthumbnailer media-video/mediainfo app-arch/p7zip sys-apps/coreutils media-gfx/imagemagick sys-apps/file app-shells/bash net-misc/rsync"
+_packages="app-editors/emacs dev-vcs/git dev-util/github-cli sys-apps/ripgrep sys-apps/fd app-shells/fzf sys-devel/gcc dev-build/cmake dev-debug/gdb llvm-core/clang dev-debug/valgrind net-misc/curl app-text/pandoc-bin dev-lang/python dev-util/pkgconf app-text/hunspell app-text/texlive-core media-libs/fontconfig sys-process/procps app-arch/unzip net-misc/wget llvm-core/clang-common media-libs/vips app-text/poppler media-video/ffmpegthumbnailer media-video/mediainfo app-arch/p7zip sys-apps/coreutils media-gfx/imagemagick sys-apps/file app-shells/bash net-misc/rsync"
 # Install a standard system directory layout at ${_EMERGE_ROOT}, optional, default: false
 #BOB_INSTALL_BASELAYOUT=true
 
@@ -36,41 +36,48 @@ configure_builder()
 configure_rootfs_build()
 {
     # Update Emacs use flags for modern features and Python support
-    update_use 'app-editors/emacs' '+gtk3' '+json' '+libxml2' '+imagemagick' '+xft' '+gmp' '+threads' '+ssl' '+zlib' '+gzip-el' '+inotify' '+jit' '+dynamic-loading' '+harfbuzz' '+cairo' '+svg' '+png' '+jpeg' '+gif' '+tiff' '+xpm' '+webp'
+    update_use 'app-editors/emacs' '+X' '+json' '+libxml2' '+imagemagick' '+xft' '+gmp' '+threads' '+ssl' '+zlib' '+gzip-el' '+inotify' '+jit' '+dynamic-loading' '+harfbuzz' '+cairo' '+svg' '+png' '+jpeg' '+gif' '+tiff' '+xpm' '+webp'
     
     # Enable libgccjit for native compilation
     update_use 'sys-devel/gcc' '+jit'
     
     # Python support for tools
-    update_use 'dev-lang/python' '+ssl' '+sqlite' '+threads' '+xml' '+ncurses' '+readline'
-    
+    update_use 'dev-lang/python' '+ssl' '+sqlite' '+xml' '+ncurses' '+readline'
+
     # Git with curl support
-    update_use 'dev-vcs/git' '+curl' '+webdav' '+threads'
-    
-    # Ripgrep with PCRE2 support
-    update_use 'sys-apps/ripgrep' '+pcre2'
+    update_use 'dev-vcs/git' '+curl' '+webdav'
     
     # Fontconfig with modern features
     update_use 'media-libs/fontconfig' '+doc'
     
-    # libvips for image thumbnails (vipsthumbnail) - Dirvish image preview
-    update_use 'media-libs/libvips' '+jpeg' '+png' '+webp' '+tiff' '+imagemagick' '+svg' '+gif'
+    # Freetype with harfbuzz support (required by ImageMagick svg)
+    update_use 'media-libs/freetype' '+harfbuzz' '+png'
+        
+    # Harfbuzz with icu and graphite support
+    update_use 'media-libs/harfbuzz'  '+use::icu' '+graphite'
     
+    # Docbook SGML utils with jadetex support
+    update_use 'app-text/docbook-sgml-utils' '+jadetex'
+    
+    # libvips for image thumbnails (vipsthumbnail) - Dirvish image preview
+    update_use 'media-libs/vips' '+jpeg' '+png' '+webp' '+tiff' '+imagemagick' '+svg'
+
     # FFmpeg thumbnails for video preview - Dirvish video preview
     update_use 'media-video/ffmpegthumbnailer' '+jpeg' '+png'
-    
+
     # Poppler for PDF preview - Dirvish PDF support
     update_use 'app-text/poppler' '+cairo' '+jpeg' '+png' '+tiff' '+utils'
     
     # MediaInfo for audio/video metadata - Dirvish media info
-    update_use 'media-libs/mediainfo' '+curl' '+mms'
+    update_use 'media-video/mediainfo' '+curl' '+mms'
     
     # ImageMagick for font preview and image processing - Dirvish font preview
-    update_use 'media-gfx/imagemagick' '+jpeg' '+png' '+svg' '+tiff' '+webp' '+fontconfig' '+truetype'
-    
+    # Note: svg requires xml to be enabled
+    update_use 'media-gfx/imagemagick' '+jpeg' '+png' '+svg' '+tiff' '+webp' '+fontconfig' '+truetype' '+xml'
+
     # 7zip for archive preview - Dirvish archive support
     update_use 'app-arch/p7zip' '+rar'
-    
+
     # Enhanced coreutils for better ls support
     update_use 'sys-apps/coreutils' '+xattr' '+acl'
     
@@ -81,7 +88,7 @@ configure_rootfs_build()
     update_keywords 'app-editors/emacs' '+~amd64'
     update_keywords 'sys-apps/ripgrep' '+~amd64'
     update_keywords 'sys-apps/fd' '+~amd64'
-    update_keywords 'media-libs/libvips' '+~amd64'
+    update_keywords 'media-libs/vips' '+~amd64'
     update_keywords 'media-video/ffmpegthumbnailer' '+~amd64'
     
 }
