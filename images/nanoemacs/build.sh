@@ -37,9 +37,16 @@ configure_rootfs_build()
 {
     # Disable problematic postinst operations in build environment
     export GNOME2_ECLASS_GLIB_SCHEMAS="true"
+
+    # Update Emacs use flags for modern features
+    # For Wayland pure GTK mode (recommended for Emacs 29+):
+    #update_use 'app-editors/emacs' '-X' '+gtk' '+json' '+libxml2' '+imagemagick' '+xft' '+gmp' '+threads' '+ssl' '+zlib' '+gzip-el' '+inotify' '+jit' '+dynamic-loading' '+harfbuzz' '+cairo' '+svg' '+png' '+jpeg' '+gif' '+tiff' '+xpm' '+webp'
     
-    # Update Emacs use flags for modern features and Python support
-    update_use 'app-editors/emacs' '+X' '+json' '+libxml2' '+imagemagick' '+xft' '+gmp' '+threads' '+ssl' '+zlib' '+gzip-el' '+inotify' '+jit' '+dynamic-loading' '+harfbuzz' '+cairo' '+svg' '+png' '+jpeg' '+gif' '+tiff' '+xpm' '+webp'
+    # OR for X11 (Xorg):
+    update_use 'app-editors/emacs' '+X' '+gtk' '+json' '+libxml2' '+imagemagick' '+xft' '+gmp' '+threads' '+ssl' '+zlib' '+gzip-el' '+inotify' '+jit' '+dynamic-loading' '+harfbuzz' '+cairo' '+svg' '+png' '+jpeg' '+gif' '+tiff' '+xpm' '+webp'
+    
+    # OR for daemon mode (most stable):
+    # update_use 'app-editors/emacs' '+X' '+athena' '+Xaw3d' '-gtk' '-motif' '+json' '+libxml2' '+imagemagick' '+xft' '+gmp' '+threads' '+ssl' '+zlib' '+gzip-el' '+inotify' '+jit' '+dynamic-loading' '+harfbuzz' '+cairo' '+svg' '+png' '+jpeg' '+gif' '+tiff' '+xpm' '+webp'
     
     # Enable libgccjit for native compilation
     update_use 'sys-devel/gcc' '+jit'
