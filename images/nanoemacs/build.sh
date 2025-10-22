@@ -35,6 +35,9 @@ configure_builder()
 #
 configure_rootfs_build()
 {
+    # Disable problematic postinst operations in build environment
+    export GNOME2_ECLASS_GLIB_SCHEMAS="true"
+    
     # Update Emacs use flags for modern features and Python support
     update_use 'app-editors/emacs' '+X' '+json' '+libxml2' '+imagemagick' '+xft' '+gmp' '+threads' '+ssl' '+zlib' '+gzip-el' '+inotify' '+jit' '+dynamic-loading' '+harfbuzz' '+cairo' '+svg' '+png' '+jpeg' '+gif' '+tiff' '+xpm' '+webp'
     
