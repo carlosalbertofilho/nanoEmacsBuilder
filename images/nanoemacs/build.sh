@@ -38,6 +38,19 @@ configure_rootfs_build()
     # Disable problematic postinst operations in build environment
     export GNOME2_ECLASS_GLIB_SCHEMAS="true"
 
+    # Skip GIO module cache update during build (will be regenerated in finish_rootfs_build)
+    mkdir -p /etc/portage/env
+    cat >> /etc/portage/env/no-gio-cache.conf << 'EOF'
+INSTALL_MASK="${INSTALL_MASK} /usr/lib*/gio/modules/giomodule.cache"
+EOF
+    
+    mkdir -p /etc/portage/package.env
+    echo "dev-libs/glib no-gio-cache.conf" >> /etc/portage/package.env/glib
+    
+    # Accept ICU license for harfbuzz
+    mkdir -p /etc/portage/package.license
+    echo "media-libs/harfbuzz ICU" >> /etc/portage/package.license/99local.conf
+
     # Update Emacs use flags for modern features
     # For Wayland pure GTK mode (recommended for Emacs 29+):
     #update_use 'app-editors/emacs' '-X' '+gtk' '+json' '+libxml2' '+imagemagick' '+xft' '+gmp' '+threads' '+ssl' '+zlib' '+gzip-el' '+inotify' '+jit' '+dynamic-loading' '+harfbuzz' '+cairo' '+svg' '+png' '+jpeg' '+gif' '+tiff' '+xpm' '+webp'
@@ -114,6 +127,17 @@ configure_rootfs_build()
 #
 finish_rootfs_build()
 {
+        # Rebuild GIO module cache properly after all packages are installed
+    if [[ -x "${_EMERGE_ROOT}/usr/bin/gio-querymodules" ]]; then
+        echo "Rebuilding GIO module cache..."
+        for gio_dir in "${_EMERGE_ROOT}"/usr/lib*/gio/modules/; do
+            if [[ -d "$gio_dir" ]]; then
+                chroot "${_EMERGE_ROOT}" /usr/bin/gio-querymodules "${gio_dir#${_EMERGE_ROOT}}" 2>/dev/null || true
+            fi
+        done
+        echo "✓ GIO module cache rebuilt"
+    fi
+    
     # Create necessary directories
     mkdir -p "${_EMERGE_ROOT}"/home/user/.config/emacs
     mkdir -p "${_EMERGE_ROOT}"/home/user/.local/share/fonts
