@@ -219,7 +219,8 @@ TERM=xterm-256color
 PATH="/usr/local/bin:/usr/bin:/bin"
 EOF
     
-    # Create a default user setup script
+    # Create a default user setup script (BEFORE trying to execute it)
+    mkdir -p "${_EMERGE_ROOT}/usr/local/bin"
     cat > "${_EMERGE_ROOT}/usr/local/bin/setup-user" << 'EOF'
 #!/bin/bash
 # Setup script for user environment
