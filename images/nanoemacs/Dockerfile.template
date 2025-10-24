@@ -14,6 +14,21 @@ RUN groupadd -g $UID $UNAME && \
     useradd -u $UID -g $UID -m -s /bin/bash $UNAME && \
     echo "$UNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+# Install Starship Prompt
+RUN curl -fsSL https://starship.rs/install.sh | bash -s -- -y
+
+# Configure Starship for the user
+RUN echo 'eval "$(starship init bash)"' >> /home/$UNAME/.bashrc && \
+    chown $UNAME:$UNAME /home/$UNAME/.bashrc
+
+# Download and install Nerd Fonts (JetBrains Mono and Fira Code)
+RUN mkdir -p /usr/share/fonts/jetbrains /usr/share/fonts/firacode && \
+    curl -fsSL -o /tmp/JetBrainsMono.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip && \
+    curl -fsSL -o /tmp/FiraCode.zip https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip && \
+    unzip -q /tmp/JetBrainsMono.zip -d /usr/share/fonts/jetbrains && \
+    unzip -q /tmp/FiraCode.zip -d /usr/share/fonts/firacode && \
+    rm -f /tmp/JetBrainsMono.zip /tmp/FiraCode.zip
+
 # Update font cache
 RUN fc-cache -fv
 

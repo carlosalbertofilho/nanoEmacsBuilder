@@ -8,7 +8,7 @@
 #     kubler.sh build -i emacs/nanoemacs
 # ..and then search the Portage database:
 #     eix <search-string>
-_packages="app-editors/emacs dev-vcs/git dev-util/github-cli sys-apps/ripgrep sys-apps/fd app-shells/fzf sys-devel/gcc dev-build/cmake dev-debug/gdb llvm-core/clang dev-debug/valgrind net-misc/curl app-text/pandoc-bin dev-lang/python dev-util/pkgconf app-text/hunspell app-text/texlive-core media-libs/fontconfig sys-process/procps app-arch/unzip net-misc/wget llvm-core/clang-common media-libs/vips app-text/poppler media-video/ffmpegthumbnailer media-video/mediainfo app-arch/p7zip sys-apps/coreutils media-gfx/imagemagick sys-apps/file app-shells/bash net-misc/rsync"
+_packages="app-editors/emacs dev-vcs/git dev-util/github-cli sys-apps/ripgrep sys-apps/fd app-shells/fzf sys-devel/gcc dev-build/cmake dev-debug/gdb llvm-core/clang dev-debug/valgrind net-misc/curl app-text/pandoc-bin dev-lang/python dev-util/pkgconf app-text/hunspell app-text/texlive-core media-libs/fontconfig sys-process/procps app-arch/unzip net-misc/wget llvm-core/clang-common media-libs/vips app-text/poppler media-video/ffmpegthumbnailer media-video/mediainfo app-arch/p7zip sys-apps/coreutils media-gfx/imagemagick sys-apps/file app-shells/bash net-misc/rsync sys-apps/shadow sys-libs/glibc app-admin/sudo"
 # Install a standard system directory layout at ${_EMERGE_ROOT}, optional, default: false
 #BOB_INSTALL_BASELAYOUT=true
 
@@ -27,7 +27,9 @@ configure_builder()
 {
     # Packages installed in this hook don't end up in the final image but are available for depending image builds
     #emerge dev-lang/go app-misc/foo
-    :
+    
+    # Configure emerge to continue even if glib postinst fails
+    echo 'EMERGE_DEFAULT_OPTS="${EMERGE_DEFAULT_OPTS} --keep-going"' >> /etc/portage/make.conf
 }
 
 #
@@ -35,17 +37,6 @@ configure_builder()
 #
 configure_rootfs_build()
 {
-    # Disable problematic postinst operations in build environment
-    export GNOME2_ECLASS_GLIB_SCHEMAS="true"
-
-    # Skip GIO module cache update during build (will be regenerated in finish_rootfs_build)
-    mkdir -p /etc/portage/env
-    cat >> /etc/portage/env/no-gio-cache.conf << 'EOF'
-INSTALL_MASK="${INSTALL_MASK} /usr/lib*/gio/modules/giomodule.cache"
-EOF
-    
-    mkdir -p /etc/portage/package.env
-    echo "dev-libs/glib no-gio-cache.conf" >> /etc/portage/package.env/glib
     
     # Accept ICU license for harfbuzz
     mkdir -p /etc/portage/package.license
@@ -153,16 +144,7 @@ finish_rootfs_build()
             cp /usr/local/bin/norminette "${_EMERGE_ROOT}/usr/local/bin/"
         fi
     fi
-    
-    # Download and install Nerd Fonts (JetBrains Mono and Fira Code)
-    download_file "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip"
-    download_file "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip"
-    
-    # Extract fonts to the target fonts directory
-    cd /distfiles
-    unzip -q JetBrainsMono.zip -d "${_EMERGE_ROOT}/usr/share/fonts/jetbrains/"
-    unzip -q FiraCode.zip -d "${_EMERGE_ROOT}/usr/share/fonts/firacode/"
-    
+        
     # Create symlinks for common command names used by Dirvish
     # Some systems use different names for these commands
     
@@ -236,6 +218,30 @@ EOF
     
     # Copy c++ libs for development tools
     copy_gcc_libs
+    
+    # Manually copy libgccjit for Emacs native compilation
+    echo "Copying libgccjit libraries for Emacs JIT support..."
+    mkdir -p "${_EMERGE_ROOT}/usr/lib64"
+    
+    # Find and copy libgccjit from the build system
+    for lib in /usr/lib/gcc/*/*/libgccjit.so*; do
+        if [[ -f "$lib" ]]; then
+            cp -av "$lib" "${_EMERGE_ROOT}/usr/lib64/" || true
+        fi
+    done
+    
+    # Also check in /usr/lib64
+    for lib in /usr/lib64/libgccjit.so*; do
+        if [[ -f "$lib" ]]; then
+            cp -av "$lib" "${_EMERGE_ROOT}/usr/lib64/" || true
+        fi
+    done
+    
+    # Update library cache
+    if [[ -x "${_EMERGE_ROOT}/sbin/ldconfig" ]]; then
+        chroot "${_EMERGE_ROOT}" /sbin/ldconfig || true
+        echo "✓ Library cache updated with libgccjit"
+    fi
     
     # Log installed packages for documentation
     log_as_installed "manual install" "norminette" "https://pypi.org/project/norminette/"
