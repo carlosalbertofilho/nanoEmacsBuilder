@@ -30,6 +30,13 @@ configure_builder()
     
     # Configure emerge to continue even if glib postinst fails
     echo 'EMERGE_DEFAULT_OPTS="${EMERGE_DEFAULT_OPTS} --keep-going"' >> /etc/portage/make.conf
+
+     # Skip GIO module cache update during build (will be regenerated in finish_rootfs_build)
+    mkdir -p /etc/portage/env
+    echo 'INSTALL_MASK="/usr/lib*/gio/modules/giomodule.cache"' >> /etc/portage/env/no-gio-cache.conf
+    
+    mkdir -p /etc/portage/package.env
+    echo "dev-libs/glib no-gio-cache.conf" >> /etc/portage/package.env/glib
 }
 
 #
